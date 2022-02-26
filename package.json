@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pre": "cd frontend && npm install && cd.. && cd backend && npm install",
     "dev frontend": "cd frontend && next dev",
     "dev backend": "cd backend && nodemon server.js"
   },
