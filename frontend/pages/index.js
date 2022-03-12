@@ -28,14 +28,14 @@ export default function HomePage() {
 					<p className="m-0">Choose one:</p>
 					<div>
 						<div className="flex flex-row w-256 justify-between	">
-							<button className="buttons" id="mealy">Mealy Machine</button>
+							<button className="buttons" onClick={()=>setMealyOption(true)} id="mealy">Mealy Machine</button>
 							<button className="buttons" id="moore">Moore Machine</button>
 						</div>
 					</div>
 				</div>}
 
-			{mooreOption&&
-				<div>
+			{mealyOption&&
+				<div> 
 					<input type="number" className="border" onChange={handleChangeS}/>
 					<input type="number" className="border" onChange={handleChangeI}/>
 					<button onClick={InputTable}>Click Here</button>
