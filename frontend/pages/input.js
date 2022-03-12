@@ -83,7 +83,7 @@ export default function InputPage({numInputs, numStates}){
 							</tbody>
 						</table>
 
-						<button onClick={sendDataMealy}>AQUI</button>
+						<button onClick={sendDataMealy}>Click</button>
 					</div>
 			</div>
 		</div>

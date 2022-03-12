@@ -1,5 +1,6 @@
 import InputPage from "./input";
-import {useState} from "react";
+import { useState } from "react";
+
 
 export default function HomePage() {
 
@@ -9,39 +10,42 @@ export default function HomePage() {
 	const [numStates, setNumStates] = useState(0)
 	const [numInputs, setNumInputs] = useState(0)
 
-	let handleChangeS = (e)=>{
+	let handleChangeS = (e) => {
 		setNumStates(e.target.value)
 	}
-	let handleChangeI = (e)=>{
+	let handleChangeI = (e) => {
 		setNumInputs(e.target.value)
 	}
 
-	let InputTable = (e) =>{
+	let InputTable = (e) => {
 		setInputOption(true)
 	}
 
-	return(
+	return (
 		<div>
 			<h1 className="text-center font-bold">FINITE STATE MACHINE</h1>
-			{!inputOption&&
+			{!inputOption &&
 				<div>
-					<p className="m-0">Choose one:</p>
+					<p className="text-left">Choose one:</p>
 					<div>
 						<div className="flex flex-row w-256 justify-between	">
-							<button className="buttons" onClick={()=>setMealyOption(true)} id="mealy">Mealy Machine</button>
-							<button className="buttons" id="moore">Moore Machine</button>
+							<button onClick={() => setMealyOption(true)} id="mealy">Mealy Machine</button>
+							<button onClick={() => setMooreOption(true)} id="moore">Moore Machine</button>
 						</div>
 					</div>
 				</div>}
 
-			{mealyOption&&
-				<div> 
-					<input type="number" className="border" onChange={handleChangeS}/>
-					<input type="number" className="border" onChange={handleChangeI}/>
-					<button onClick={InputTable}>Click Here</button>
+			{mealyOption &&
+				<div>
+					<p className="text-center">Mealy Machine</p>
+					<input type="number" placeholder={"Number of states"} className="text-center" onChange={handleChangeS} />
+					<input type="number" placeholder={"Input alphabet"} className="text-center" onChange={handleChangeI} />
+					<button onClick={InputTable}>Next</button>
 				</div>}
 
-			{inputOption && <InputPage numStates={numStates} numInputs={numInputs}/>}
+
+
+			{inputOption && <InputPage numStates={numStates} numInputs={numInputs} />}
 		</div>
 	)
 }

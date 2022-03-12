@@ -4,34 +4,42 @@
 
 html, body {
     height: 100%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 html {
     display: table;
     margin: auto;
+    background-color: rgb(229, 227, 201);
 }
 
 body {
     display: table-cell;
     vertical-align: middle;
+    font-size: 17px;
 }
 
-.h1 {
-    color: #00e1ff;
+h1 {
+    color: rgb(120, 147, 149);
     font-weight: bold;
-    width: 30%;
+    margin-bottom: 30px;
+    font-size: 30px;
 }
-p{
+p {
     font-weight: lighter;
-    margin: 30px;
+    margin: 13px;
 }
 
 button {
     padding: 8px 20px;
-    margin: 7px 0;
-    border: 2px solid white;
+    margin: 20px;
     border-radius: 8px;
-    background: rgb(152, 255, 255);
-    color: rgb(12, 10, 10);
+    background: rgb(148, 180, 159);
+    color: black;
     cursor: pointer;
 }
+
+button:hover {
+    background-color: rgb(180, 207, 176);
+    color: rgb(120, 147, 149);
+  }
