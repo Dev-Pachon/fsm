@@ -1,0 +1,35 @@
+html, body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.h1 {
+    color: #00e1ff;
+    font-weight: bold;
+    width: 30%;
+}
+.p{
+    font-weight: lighter; 
+    margin: 30px; 
+}
+
+.buttons {
+    padding: 8px 20px;
+    margin: 7px 0;
+    border: 2px solid white;
+    border-radius: 8px;
+    background: rgb(152, 255, 255);
+    color: rgb(12, 10, 10);
+    cursor: pointer;
+}
+
+
