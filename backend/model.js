@@ -1,43 +1,44 @@
 const model = {};
 
 let originalAutomata = {
-	MealyStateTable:{
-		"A":{
-			f:["B","C"],
-			g:[0,0]
+	MealyStateTable: {
+		"A": {
+			f: ["B", "C"],
+			g: [0, 0]
 		},
-		"B":{
-			f:["C","D"],
-			g:[1,1]
+		"B": {
+			f: ["C", "D"],
+			g: [1, 1]
 		},
-		"C":{
-			f:["D","E"],
-			g:[0,0]
+		"C": {
+			f: ["D", "E"],
+			g: [0, 0]
 		},
-		"D":{
-			f:["C","B"],
-			g:[1,1]
+		"D": {
+			f: ["C", "B"],
+			g: [1, 1]
 		},
-		"E":{
-			f:["F","E"],
-			g:[1,1]
+		"E": {
+			f: ["F", "E"],
+			g: [1, 1]
 		},
-		"F":{
-			f:["G","C"],
-			g:[0,0]
+		"F": {
+			f: ["G", "C"],
+			g: [0, 0]
 		},
-		"G":{
-			f:["F","G"],
-			g:[1,1]
+		"G": {
+			f: ["F", "G"],
+			g: [1, 1]
 		},
-		"H":{
-			f:["J","B"],
-			g:[1,0]
+		"H": {
+			f: ["J", "B"],
+			g: [1, 0]
 		},
-		"J":{
-			f:["H","D"],
-			g:[1,0]
-		}},
+		"J": {
+			f: ["H", "D"],
+			g: [1, 0]
+		}
+	},
 	initialState: 0,
 	numStates: 9,
 	numInputs: 2
@@ -62,7 +63,7 @@ function initialPartitionMealyAutomata() {
 		if (i === 0) {
 			groups.push({})
 			groups[0][keys[0]] = machine[keys[0]]
-		}else {
+		} else {
 			flag = false
 			let j = 0
 
@@ -74,7 +75,7 @@ function initialPartitionMealyAutomata() {
 				let validFlag = true
 
 				for (let k = 0; k < numOutputs; k++) {
-					if (!(machine[keys[i]].g[k] === groups[j][tempKeys[0]].g[k])){
+					if (!(machine[keys[i]].g[k] === groups[j][tempKeys[0]].g[k])) {
 						validFlag = false
 					}
 				}
@@ -93,6 +94,42 @@ function initialPartitionMealyAutomata() {
 	}
 	console.log(groups)
 	return groups;
+}
+
+
+//Used to verify if a state is reachable from the initial state
+function floydWarshall() {
+	let dist = []
+
+	for (let i = 0; i < numStates; i++) {
+		let state = []
+		dist.push(state)
+		for (let j = 0; j < numStates; j++) {
+			let empty = false
+			if (j == i) {
+				empty = true
+			}
+			state.push(empty)
+		}
+	}
+
+	for (let k = 0; k < numStates; k++) {
+		for (let r = 0; r < numStates[k]; r++) {
+			let aux = numStates[k][r]
+			dist[k][aux] = true
+		}
+	}
+	for (let s = 0; s < dist.length; s++) {
+		for (let t = 0; t < dist.length; t++) {
+			for (let a = 0; a < dist.length; a++) {
+				if (dist[t][s] && dist[s][a]) {
+					dist[t][a] = true
+				}
+			}
+		}
+	}
+
+	return dist;
 }
 
 
