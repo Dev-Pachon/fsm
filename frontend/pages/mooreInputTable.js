@@ -84,7 +84,7 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 						</tbody>
 					</table>
 				</div>
-				<button onClick={sendDataMealy}>Click</button>
+				<button onClick={sendDataMealy}>Minimum distinguishable</button>
 			</div>
 		</div>
 	)

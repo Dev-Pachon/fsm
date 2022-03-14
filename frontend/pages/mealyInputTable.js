@@ -86,7 +86,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 						</tbody>
 					</table>
 				</div>
-				<button onClick={sendDataMealy}>Click</button>
+				<button onClick={sendDataMealy}>Minimum distinguishable</button>
 			</div>
 		</div>
 	)
