@@ -31,6 +31,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 			for (let i = 0; i < numInputs; i++) {
 				let e1 = document.createElement("td")
 				let inp1 = document.createElement("input")
+				inp1.style.textAlign = 'center'
 				p.append(e1)
 				e1.classList.add("border")
 				inp1.classList.add("w-full")
@@ -39,6 +40,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 
 				let e2 = document.createElement("td")
 				let inp2 = document.createElement("input")
+				inp2.style.textAlign = 'center'
 				p.append(e2)
 				e2.classList.add("border")
 				inp2.classList.add("w-full")
