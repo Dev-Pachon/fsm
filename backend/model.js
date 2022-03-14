@@ -112,7 +112,7 @@ function getBlock(partition, state) {
 	let flag = true
 	for (let i = 0; i < partition.length && flag; i++) {
 		for (let j = 0; j < partition[i].length && flag; j++) {
-			if (partition[i][j] == state) {
+			if (partition[i][j] === state) {
 				block = i
 				flag = false
 			}
@@ -124,7 +124,7 @@ function getBlock(partition, state) {
 //Verify if two states are in the same block
 function checkBlock(partition, state1, state2) {
 	let checked = false
-	if (getBlock(partition, state1) == getBlock(partition, state2)) {
+	if (getBlock(partition, state1) === getBlock(partition, state2)) {
 		checked = true
 	}
 	return checked;
@@ -139,22 +139,21 @@ function getPartitions() {
 
 
 //Mealy machine methods
-function initialPartitionMealyAutomata() {
-	let machine = originalAutomata.MealyStateTable
-	let numStates = originalAutomata.numStates
-	let numOutputs = originalAutomata.numInputs
+function initialPartitionMealyAutomata(mealyMachine) {
+	let machine = mealyMachine.StateTable
+	let numStates = mealyMachine.numStates
+	let numOutputs = mealyMachine.numInputs
 	let keys = Object.keys(machine)
 
 	console.log(keys)
 	console.log(machine)
-	console.log(originalAutomata)
+	console.log(mealyMachine)
 
 	//Groups of states
 	let groups = []
 
 	let flag;
 	for (let i = 0; i < numStates; i++) {
-		//Delete an element from states array to add it into groups array
 		if (i === 0) {
 			groups.push({})
 			groups[0][keys[0]] = machine[keys[0]]
@@ -174,7 +173,6 @@ function initialPartitionMealyAutomata() {
 						validFlag = false
 					}
 				}
-
 				if (validFlag) {
 					groups[j][keys[i]] = machine[keys[i]]
 					flag = true
@@ -194,14 +192,14 @@ function initialPartitionMealyAutomata() {
 
 
 //Moore machine methods
-function initialPartitionMooreAutomata() {
-	let machine = originalAutomata2.MooreStateTable
-	let numStates = originalAutomata2.numStates
+function initialPartitionMooreAutomata(mooreMachine) {
+	let machine = mooreMachine.StateTable
+	let numStates = mooreMachine.numStates
 	let keys = Object.keys(machine)
 
 	console.log(keys)
 	console.log(machine)
-	console.log(originalAutomata2)
+	console.log(mooreMachine)
 
 	//Groups of states
 	let groups = []
@@ -242,27 +240,30 @@ function initialPartitionMooreAutomata() {
 }
 
 //Used to verify if a state is reachable from the initial state
-function floydWarshall() {
+function floydWarshall(States) {
 	let dist = []
 
-	for (let i = 0; i < numStates; i++) {
+	for (let i = 0; i < States.length; i++) {
 		let state = []
 		dist.push(state)
-		for (let j = 0; j < numStates; j++) {
+		for (let j = 0; j < States[i].length; j++) {
 			let empty = false
-			if (j == i) {
+			if (j === i) {
 				empty = true
 			}
 			state.push(empty)
 		}
 	}
 
-	for (let k = 0; k < numStates; k++) {
-		for (let r = 0; r < numStates[k]; r++) {
-			let aux = numStates[k][r]
-			dist[k][aux] = true
+	for (let k = 0; k < States.length; k++) {
+		for (let r = 0; r < States[k].length; r++) {
+			let aux = States[k][r]
+			if (aux!==0) {
+				dist[k][r] = true
+			}
 		}
 	}
+
 	for (let s = 0; s < dist.length; s++) {
 		for (let t = 0; t < dist.length; t++) {
 			for (let a = 0; a < dist.length; a++) {
@@ -272,18 +273,66 @@ function floydWarshall() {
 			}
 		}
 	}
-
 	return dist;
 }
 
+function transformToMatrix(Machine) {
+	
+	let machineKeys = Object.keys(Machine) 
+	
+	let dictMatrix = {}
 
+	let matrix = new Array(machineKeys.length);
+	
+	//Crate an array of nxn with n equals to the num os states
+	for(let i=0; i<machineKeys.length; i++) {
+		matrix[i] = new Array(machineKeys.length).fill(0);
+		dictMatrix[machineKeys[i]] = i
+		dictMatrix[i] = machineKeys[i]
+	}
 
+	for (let i = 0; i < machineKeys.length; i++) {
+		for (let j = 0; j < Machine[machineKeys[i]].f.length; j++) {
 
-model.partition = initialPartitionMealyAutomata;
+			let fArrayElement = Machine[machineKeys[i]].f[j]
 
-module.exports = model;
+			let index = dictMatrix[fArrayElement]
 
-initialPartitionMealyAutomata();
+			matrix[i][index] = 1
+		}
+	}
 
+	return {matrix: matrix, dictMatrix: dictMatrix}
+}
 
+function eliminateInaccessibleStates(machine, numStates) {
+	let obj = transformToMatrix(machine)
+	console.table(obj.matrix)
+	console.log(obj.dictMatrix)
+
+	let dist = floydWarshall(obj.matrix)
+
+	console.log(dist)
+	let deletedStates = 0
+	for (let i = 0; i < dist[0].length; i++) {
+		if(dist[0][i] === false){
+			delete machine[obj.dictMatrix[i]]
+			deletedStates++
+		}
+	}
+	let newMachine = {}
+
+	newMachine["StateTable"] = machine
+	newMachine["numStates"] = numStates - deletedStates
+
+	return newMachine
+}
+
+let newAutomata = eliminateInaccessibleStates(originalAutomata.MealyStateTable, originalAutomata.numStates)
+newAutomata["numInputs"] = originalAutomata.numInputs
+let newAutomata2 = eliminateInaccessibleStates(originalAutomata2.MooreStateTable, originalAutomata2.numStates)
+console.log(newAutomata)
+
+initialPartitionMealyAutomata(newAutomata);
+initialPartitionMooreAutomata(newAutomata2);
 
