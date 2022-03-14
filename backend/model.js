@@ -44,48 +44,101 @@ let originalAutomata = {
 	numInputs: 2
 }
 let originalAutomata2 = {
-MooreStateTable:{
-	"A":{
-		f:["B","C"],
-		h:[0]
+	MooreStateTable: {
+		"A": {
+			f: ["B", "C"],
+			h: [0]
+		},
+		"B": {
+			f: ["C", "D"],
+			h: [1]
+		},
+		"C": {
+			f: ["D", "E"],
+			h: [0]
+		},
+		"D": {
+			f: ["C", "B"],
+			h: [1]
+		},
+		"E": {
+			f: ["F", "E"],
+			h: [1]
+		},
+		"F": {
+			f: ["G", "C"],
+			h: [0]
+		},
+		"G": {
+			f: ["F", "G"],
+			h: [1]
+		},
+		"H": {
+			f: ["J", "B"],
+			h: [1]
+		},
+		"J": {
+			f: ["H", "D"],
+			h: [1]
+		}
 	},
-	"B":{
-		f:["C","D"],
-		h:[1]
-	},
-	"C":{
-		f:["D","E"],
-		h:[0]
-	},
-	"D":{
-		f:["C","B"],
-		h:[1]
-	},
-	"E":{
-		f:["F","E"],
-		h:[1]
-	},
-	"F":{
-		f:["G","C"],
-		h:[0]
-	},
-	"G":{
-		f:["F","G"],
-		h:[1]
-	},
-	"H":{
-		f:["J","B"],
-		h:[1]
-	},
-	"J":{
-		f:["H","D"],
-		h:[1]
-	}},
-initialState: 0,
-numStates: 9,
-numInputs: 2
+	initialState: 0,
+	numStates: 9,
+	numInputs: 2
 }
 
+//Compare two arrays
+function compareArrrays(first, second) {
+	let same = first.length === second.length;
+	if (same) {
+		for (let i = 0; i < first.length && same; i++) {
+			if (!(first[i].toString() === second[i].toString())) {
+				same = false;
+			}
+		}
+	}
+
+	return same;
+}
+
+//Compare two partitions
+function comparePartitions() {
+
+}
+
+//Get the block of the state
+function getBlock(partition, state) {
+	let block
+	let flag = true
+	for (let i = 0; i < partition.length && flag; i++) {
+		for (let j = 0; j < partition[i].length && flag; j++) {
+			if (partition[i][j] == state) {
+				block = i
+				flag = false
+			}
+		}
+	}
+	return block;
+}
+
+//Verify if two states are in the same block
+function checkBlock(partition, state1, state2) {
+	let checked = false
+	if (getBlock(partition, state1) == getBlock(partition, state2)) {
+		checked = true
+	}
+	return checked;
+}
+
+//Get the rest of the partitions
+//Delete states that can't be reach from the initial state
+function getPartitions() {
+
+}
+
+
+
+//Mealy machine methods
 function initialPartitionMealyAutomata() {
 	let machine = originalAutomata.MealyStateTable
 	let numStates = originalAutomata.numStates
@@ -136,8 +189,11 @@ function initialPartitionMealyAutomata() {
 	}
 	console.log(groups)
 	return groups;
+
 }
 
+
+//Moore machine methods
 function initialPartitionMooreAutomata() {
 	let machine = originalAutomata2.MooreStateTable
 	let numStates = originalAutomata2.numStates
@@ -155,7 +211,7 @@ function initialPartitionMooreAutomata() {
 		if (i === 0) {
 			groups.push({})
 			groups[0][keys[0]] = machine[keys[0]]
-		}else {
+		} else {
 			flag = false
 			let j = 0
 
@@ -165,8 +221,9 @@ function initialPartitionMooreAutomata() {
 
 				let validFlag = true
 
-				if (!(machine[keys[i]].h[0] === groups[j][tempKeys[0]].h[0])){
-					validFlag = false}
+				if (!(machine[keys[i]].h[0] === groups[j][tempKeys[0]].h[0])) {
+					validFlag = false
+				}
 
 				if (validFlag) {
 					groups[j][keys[i]] = machine[keys[i]]
@@ -183,8 +240,6 @@ function initialPartitionMooreAutomata() {
 	console.log(groups)
 	return groups;
 }
-
-
 
 //Used to verify if a state is reachable from the initial state
 function floydWarshall() {
@@ -222,10 +277,13 @@ function floydWarshall() {
 }
 
 
+
+
 model.partition = initialPartitionMealyAutomata;
 
 module.exports = model;
 
 initialPartitionMealyAutomata();
-initialPartitionMooreAutomata();
+
+
 
