@@ -79,7 +79,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 	return (
 		<div className="flex flex-col justify-center items-center">
 			<div className="flex flex-col justify-center items-center">
-				<div className="flex container mx-40">
+				<div className="flex mx-20">
 					<table>
 						<thead id="thead">
 						</thead>
