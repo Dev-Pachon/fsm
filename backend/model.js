@@ -102,8 +102,13 @@ function compareArrrays(first, second) {
 }
 
 //Compare two partitions
-function comparePartitions() {
 
+function comparePartitions(actualPartition, prevPartition) {
+	let bool = false
+	if (actualPartition.length === prevPartition.length) {
+		bool = true
+	}
+	return bool
 }
 
 //Get the block of the state
@@ -130,13 +135,6 @@ function checkBlock(partition, state1, state2) {
 	return checked;
 }
 
-//Get the rest of the partitions
-//Delete states that can't be reach from the initial state
-function getPartitions() {
-
-}
-
-
 
 //Mealy machine methods
 function initialPartitionMealyAutomata(mealyMachine) {
@@ -144,10 +142,6 @@ function initialPartitionMealyAutomata(mealyMachine) {
 	let numStates = mealyMachine.numStates
 	let numOutputs = mealyMachine.numInputs
 	let keys = Object.keys(machine)
-
-	console.log(keys)
-	console.log(machine)
-	console.log(mealyMachine)
 
 	//Groups of states
 	let groups = []
@@ -185,7 +179,6 @@ function initialPartitionMealyAutomata(mealyMachine) {
 			}
 		}
 	}
-	console.log(groups)
 	return groups;
 
 }
@@ -196,10 +189,6 @@ function initialPartitionMooreAutomata(mooreMachine) {
 	let machine = mooreMachine.StateTable
 	let numStates = mooreMachine.numStates
 	let keys = Object.keys(machine)
-
-	console.log(keys)
-	console.log(machine)
-	console.log(mooreMachine)
 
 	//Groups of states
 	let groups = []
@@ -235,7 +224,6 @@ function initialPartitionMooreAutomata(mooreMachine) {
 			}
 		}
 	}
-	console.log(groups)
 	return groups;
 }
 
@@ -258,7 +246,7 @@ function floydWarshall(States) {
 	for (let k = 0; k < States.length; k++) {
 		for (let r = 0; r < States[k].length; r++) {
 			let aux = States[k][r]
-			if (aux!==0) {
+			if (aux !== 0) {
 				dist[k][r] = true
 			}
 		}
@@ -277,15 +265,15 @@ function floydWarshall(States) {
 }
 
 function transformToMatrix(Machine) {
-	
-	let machineKeys = Object.keys(Machine) 
-	
+
+	let machineKeys = Object.keys(Machine)
+
 	let dictMatrix = {}
 
 	let matrix = new Array(machineKeys.length);
-	
+
 	//Crate an array of nxn with n equals to the num os states
-	for(let i=0; i<machineKeys.length; i++) {
+	for (let i = 0; i < machineKeys.length; i++) {
 		matrix[i] = new Array(machineKeys.length).fill(0);
 		dictMatrix[machineKeys[i]] = i
 		dictMatrix[i] = machineKeys[i]
@@ -302,20 +290,17 @@ function transformToMatrix(Machine) {
 		}
 	}
 
-	return {matrix: matrix, dictMatrix: dictMatrix}
+	return { matrix: matrix, dictMatrix: dictMatrix }
 }
 
 function eliminateInaccessibleStates(machine, numStates) {
 	let obj = transformToMatrix(machine)
-	console.table(obj.matrix)
-	console.log(obj.dictMatrix)
 
 	let dist = floydWarshall(obj.matrix)
 
-	console.log(dist)
 	let deletedStates = 0
 	for (let i = 0; i < dist[0].length; i++) {
-		if(dist[0][i] === false){
+		if (dist[0][i] === false) {
 			delete machine[obj.dictMatrix[i]]
 			deletedStates++
 		}
@@ -328,10 +313,61 @@ function eliminateInaccessibleStates(machine, numStates) {
 	return newMachine
 }
 
+function partitionBase(firstPartition, stateTable) {
+	let partition = []
+
+	for (let i = 0; i < firstPartition.length; i++) {
+		partition.push(Object.keys(firstPartition[i]))
+	}
+
+	console.log(partition)
+	return partitionRecursive(stateTable, [], partition)
+}
+
+function partitionRecursive(stateTable, actualPartition = [], prevPartition, isInitial = true) {
+
+	let partitions = []
+
+	for (let i = 0; i < prevPartition.length; i++) {
+
+		let belongPartition = []
+		let notBelongPartition = []
+		const fElement = stateTable[prevPartition[i][0]].f
+		belongPartition.push(prevPartition[i][0])
+
+		for (let j = 1; j < prevPartition[i].length; j++) {
+			const fElement2 = stateTable[prevPartition[i][j]].f
+			let isSameBlock = true
+
+			for (let k = 0; k < fElement.length && isSameBlock; k++) {
+				isSameBlock = checkBlock(prevPartition, fElement[k], fElement2[k])
+			}
+
+			if (isSameBlock) {
+				belongPartition.push(prevPartition[i][j])
+			} else {
+				notBelongPartition.push(prevPartition[i][j])
+			}
+		}
+
+		partitions.push(belongPartition)
+		if (notBelongPartition.length !== 0) {
+			partitions.push(notBelongPartition)
+		}
+
+
+	}
+
+	if (!isInitial && comparePartitions(partitions, prevPartition)) {
+		return actualPartition
+	}
+
+	return partitionRecursive(stateTable, partitions, partitions, false)
+}
+
 let newAutomata = eliminateInaccessibleStates(originalAutomata.MealyStateTable, originalAutomata.numStates)
 newAutomata["numInputs"] = originalAutomata.numInputs
 let newAutomata2 = eliminateInaccessibleStates(originalAutomata2.MooreStateTable, originalAutomata2.numStates)
-console.log(newAutomata)
 
 initialPartitionMealyAutomata(newAutomata);
 initialPartitionMooreAutomata(newAutomata2);
