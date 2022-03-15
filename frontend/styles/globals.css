@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+    height: 100%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+html {
+    display: table;
+    margin: auto;
+    background-color: rgb(229, 227, 201);
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 17px;
+}
+
+h1 {
+    color: rgb(120, 147, 149);
+    font-weight: bold;
+    margin-bottom: 30px;
+    font-size: 30px;
+}
+p {
+    font-weight: lighter;
+    margin: 13px;
+}
+
+button {
+    padding: 8px 20px;
+    margin: 20px;
+    border-radius: 8px;
+    background: rgb(148, 180, 159);
+    color: black;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(120, 147, 149);
+    color: rgb(229, 227, 201);
+  }
