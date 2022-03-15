@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, {useEffect, useState} from "react";
 
 export default function MealyInputTable({numStates, inputAlphabet}) {
@@ -65,8 +66,8 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 
 			for (let j = 0; j < numInputs; j++) {
 
-				let inputE = document.getElementById("input-" + i).value
-				let outputE = document.getElementById("output-" + i).value
+				let inputE = document.getElementById("inputMealy-" + i).value
+				let outputE = document.getElementById("outputMealy-" + i).value
 
 				obj["StateTable"][state]["f"].push(inputE)
 				obj["StateTable"][state]["g"].push(outputE)
@@ -88,7 +89,10 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 						</tbody>
 					</table>
 				</div>
-				<button onClick={sendDataMealy}>Minimum distinguishable</button>
+				<Link href="/result">
+					<a><button onClick={sendDataMealy}>Minimum distinguishable</button></a>
+				</Link>
+				
 			</div>
 		</div>
 	)
