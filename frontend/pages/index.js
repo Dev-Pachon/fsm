@@ -32,7 +32,7 @@ export default function HomePage() {
 
 	return (
 		<div>
-			<h1 className="text-center font-bold">FINITE STATE MACHINE</h1>
+			<h1 className="font-bold" style={{textAlign: "center"}} >FINITE STATE MACHINE</h1>
 			{!inputOption &&
 				<div>
 					<p className="text-left">Choose one:</p>

@@ -1,11 +1,12 @@
-import Link from "next/link";
+import { useRouter } from "next/router";
 import React, {useEffect, useState} from "react";
 
 export default function MealyInputTable({numStates, inputAlphabet}) {
 
-	inputAlphabet = inputAlphabet.split(",")
+	let inputAlphabetSplit = inputAlphabet.split(",")
 
-	let numInputs = inputAlphabet.length
+	const router = useRouter()
+	let numInputs = inputAlphabetSplit.length
 
 	useEffect(() => {
 		let header = document.getElementById("thead")
@@ -16,11 +17,11 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 		for (let i = 0; i < numInputs; i++) {
 			let e1 = document.createElement("th")
 			header.append(e1)
-			e1.append("f( "+inputAlphabet[i]+")")
+			e1.append("f( "+inputAlphabetSplit[i]+")")
 
 			let e2 = document.createElement("th")
 			header.append(e2)
-			e2.append("g("+inputAlphabet[i]+")")
+			e2.append("g("+inputAlphabetSplit[i]+")")
 
 		}
 		let inputs = document.getElementById("tbody")
@@ -28,8 +29,8 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 
 		for (let i = 0; i < numStates; i++) {
 			let p = document.createElement("tr")
-			p.append("q" + i)
-			for (let i = 0; i < numInputs; i++) {
+			p.append(String.fromCharCode("A".charCodeAt(0) + i))
+			for (let j = 0; j < numInputs; j++) {
 				let e1 = document.createElement("td")
 				let inp1 = document.createElement("input")
 				inp1.style.textAlign = 'center'
@@ -37,7 +38,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 				e1.classList.add("border")
 				inp1.classList.add("w-full")
 				e1.append(inp1)
-				inp1.setAttribute("id", "inputMealy-" + i)
+				inp1.setAttribute("id", "inputMealy-" + i+j)
 
 				let e2 = document.createElement("td")
 				let inp2 = document.createElement("input")
@@ -46,7 +47,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 				e2.classList.add("border")
 				inp2.classList.add("w-full")
 				e2.append(inp2)
-				inp2.setAttribute("id", "outputMealy-" + i)
+				inp2.setAttribute("id", "outputMealy-" + i+j)
 			}
 			inputs.append(p)
 		}
@@ -55,26 +56,36 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 	let sendDataMealy = () => {
 		let obj = {}
 		obj["numStates"] = numStates
-		obj["numInputs"] = numInputs
-		obj["StateTable"] = {}
+		obj["inputAlphabet"] = inputAlphabet
+		obj["MealyStateTable"] = {}
 
 		for (let i = 0; i < numStates; i++) {
 			console.log(String.fromCharCode("A".charCodeAt(0) + i))
 			let state = String.fromCharCode("A".charCodeAt(0) + i)
 
-			obj["StateTable"][state] = {f: [], g: []}
+			obj["MealyStateTable"][state] = {f: [], g: []}
 
 			for (let j = 0; j < numInputs; j++) {
 
-				let inputE = document.getElementById("inputMealy-" + i).value
-				let outputE = document.getElementById("outputMealy-" + i).value
+				let inputE = document.getElementById("inputMealy-" + i+j).value
+				let outputE = document.getElementById("outputMealy-" + i+j).value
 
-				obj["StateTable"][state]["f"].push(inputE)
-				obj["StateTable"][state]["g"].push(outputE)
+				obj["MealyStateTable"][state]["f"].push(inputE)
+				obj["MealyStateTable"][state]["g"].push(outputE)
 			}
 		}
 
 		console.log(obj)
+
+		fetch('/api/fetchMealy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(obj),
+      	})
+
+		router.push("/resultMealy")
 	}
 
 	return (
@@ -89,10 +100,7 @@ export default function MealyInputTable({numStates, inputAlphabet}) {
 						</tbody>
 					</table>
 				</div>
-				<Link href="/result">
-					<a><button onClick={sendDataMealy}>Minimum distinguishable</button></a>
-				</Link>
-				
+				<button onClick={sendDataMealy}>Reduce table</button>				
 			</div>
 		</div>
 	)

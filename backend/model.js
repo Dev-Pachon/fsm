@@ -1,6 +1,10 @@
-const model = {};
+const model = {}
 
-let originalAutomata = {
+let originalAutomata = {}
+let originalAutomata2 = {}
+
+function initialice(){
+	originalAutomata =  {
 	MealyStateTable: {
 		"A": {
 			f: ["B", "C"],
@@ -41,9 +45,9 @@ let originalAutomata = {
 	},
 	initialState: 0,
 	numStates: 9,
-	numInputs: 2
+	inputAlphabet: "0,1"
 }
-let originalAutomata2 = {
+	originalAutomata2 = {
 	MooreStateTable: {
 		"A": {
 			f: ["B", "C"],
@@ -83,25 +87,15 @@ let originalAutomata2 = {
 		}
 	},
 	initialState: 0,
-	numStates: 9,
-	numInputs: 2
+	inputAlphabet: "0,1",
+	numStates: 9
 }
-
-//Compare two arrays
-function compareArrrays(first, second) {
-	let same = first.length === second.length;
-	if (same) {
-		for (let i = 0; i < first.length && same; i++) {
-			if (!(first[i].toString() === second[i].toString())) {
-				same = false;
-			}
-		}
-	}
-
-	return same;
 }
-
-//Compare two partitions
+/**
+ * This method compares two partitions
+ * @param {array} actualPartition the actual partition
+ * @param {array} prevPartition the previous partition
+ */
 
 function comparePartitions(actualPartition, prevPartition) {
 	let bool = false
@@ -111,7 +105,11 @@ function comparePartitions(actualPartition, prevPartition) {
 	return bool
 }
 
-//Get the block of the state
+/**
+ * This method returns the block of the state
+ * @param {array} partition 
+ * @param {array} state
+ */
 function getBlock(partition, state) {
 	let block
 	let flag = true
@@ -126,7 +124,12 @@ function getBlock(partition, state) {
 	return block;
 }
 
-//Verify if two states are in the same block
+/**
+ * This method verify if two states are in the same block
+ * @param {array} partition
+ * @param {array} state1
+ * @param {array} state2
+ */
 function checkBlock(partition, state1, state2) {
 	let checked = false
 	if (getBlock(partition, state1) === getBlock(partition, state2)) {
@@ -136,7 +139,9 @@ function checkBlock(partition, state1, state2) {
 }
 
 
-//Mealy machine methods
+/**
+ * Mealy machine methods
+ */
 function initialPartitionMealyAutomata(mealyMachine) {
 	let machine = mealyMachine.StateTable
 	let numStates = mealyMachine.numStates
@@ -179,12 +184,15 @@ function initialPartitionMealyAutomata(mealyMachine) {
 			}
 		}
 	}
-	return groups;
+	console.log(groups)
 
+	return partitionBase(groups, originalAutomata.MealyStateTable)
 }
 
 
-//Moore machine methods
+/**
+ * Moore machine methods
+ */
 function initialPartitionMooreAutomata(mooreMachine) {
 	let machine = mooreMachine.StateTable
 	let numStates = mooreMachine.numStates
@@ -224,10 +232,16 @@ function initialPartitionMooreAutomata(mooreMachine) {
 			}
 		}
 	}
-	return groups;
+
+	console.log(groups)
+
+
+	return partitionBase(groups, originalAutomata2.MooreStateTable)
 }
 
-//Used to verify if a state is reachable from the initial state
+/**
+ *Used to verify if a state is reachable from the initial state
+ */
 function floydWarshall(States) {
 	let dist = []
 
@@ -320,10 +334,11 @@ function partitionBase(firstPartition, stateTable) {
 		partition.push(Object.keys(firstPartition[i]))
 	}
 
-	console.log(partition)
 	return partitionRecursive(stateTable, [], partition)
 }
-
+/**
+ * This method makes the rest of the partitions
+ */
 function partitionRecursive(stateTable, actualPartition = [], prevPartition, isInitial = true) {
 
 	let partitions = []
@@ -355,8 +370,8 @@ function partitionRecursive(stateTable, actualPartition = [], prevPartition, isI
 			partitions.push(notBelongPartition)
 		}
 
-
 	}
+	console.table(partitions)
 
 	if (!isInitial && comparePartitions(partitions, prevPartition)) {
 		return actualPartition
@@ -365,10 +380,74 @@ function partitionRecursive(stateTable, actualPartition = [], prevPartition, isI
 	return partitionRecursive(stateTable, partitions, partitions, false)
 }
 
-let newAutomata = eliminateInaccessibleStates(originalAutomata.MealyStateTable, originalAutomata.numStates)
-newAutomata["numInputs"] = originalAutomata.numInputs
-let newAutomata2 = eliminateInaccessibleStates(originalAutomata2.MooreStateTable, originalAutomata2.numStates)
+function reduceMealy() {
+	let newAutomata = eliminateInaccessibleStates(originalAutomata.MealyStateTable, originalAutomata.numStates)
+	newAutomata["numInputs"] = originalAutomata.inputAlphabet.length
+	return initialPartitionMealyAutomata(newAutomata)
+}
 
-initialPartitionMealyAutomata(newAutomata);
-initialPartitionMooreAutomata(newAutomata2);
+function showMealy(){
+	let finalPart = reduceMealy()
+	console.log(finalPart)
 
+	let finalMachine = {
+		stateTable:{},
+		inputAlphabet:originalAutomata.inputAlphabet,
+		numStates:finalPart.length
+	}
+
+	for (let i = 0; i < finalPart.length; i++) {
+		finalMachine.stateTable["{"+finalPart[i]+"}"] = {
+			f:originalAutomata.MealyStateTable[finalPart[i][0]].f,
+			g:originalAutomata.MealyStateTable[finalPart[i][0]].g
+		}
+	}
+
+	let keys = Object.keys(finalMachine.stateTable)
+
+	for (let i = 0; i < keys.length; i++) {
+		console.log(finalMachine.stateTable[keys[i]].f)
+	}
+	console.table(finalMachine.stateTable)
+
+	return finalMachine
+}
+function showMoore(){
+
+	let finalPart = reduceMoore()
+
+	let finalMachine = {
+		stateTable:{},
+		inputAlphabet:originalAutomata2.inputAlphabet,
+		numStates:finalPart.length
+	}
+
+	for (let i = 0; i < finalPart.length; i++) {
+		finalMachine.stateTable["{"+finalPart[i]+"}"] = {
+			f:originalAutomata2.MooreStateTable[finalPart[i][0]].f,
+			h:originalAutomata2.MooreStateTable[finalPart[i][0]].h
+		}
+	}
+
+	return finalMachine
+}
+
+function reduceMoore() {
+	let newAutomata = eliminateInaccessibleStates(originalAutomata2.MooreStateTable, originalAutomata2.numStates)
+	return initialPartitionMooreAutomata(newAutomata)
+}
+
+function fetchDataMealy(data) {
+	originalAutomata = data
+}
+
+function fetchDataMoore(data) {
+	originalAutomata2 = data
+}
+
+model.showMealy = showMealy
+model.showMoore = showMoore
+model.fetchDataMealy = fetchDataMealy
+model.fetchDataMoore = fetchDataMoore
+
+module.exports = model

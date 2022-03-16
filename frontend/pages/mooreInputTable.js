@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
+import { useRouter } from "next/router";
+
 
 export default function MooreInputTable({inputAlphabet, numStates}) {
 
-	inputAlphabet = inputAlphabet.split(",")
-
-	let numInputs = inputAlphabet.length
+	let inputAlphabetSplit = inputAlphabet.split(",")
+	const router = useRouter()
+	let numInputs = inputAlphabetSplit.length
 
 	useEffect(() => {
 		let header = document.getElementById("thead")
@@ -15,7 +17,7 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 		for (let i = 0; i < numInputs; i++) {
 			let e1 = document.createElement("th")
 			header.append(e1)
-			e1.append("f(" + inputAlphabet[i] + ")")
+			e1.append("f(" + inputAlphabetSplit[i] + ")")
 		}
 		let e2 = document.createElement("th")
 		header.append(e2)
@@ -27,8 +29,8 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 		for (let i = 0; i < numStates; i++) {
 			let p = document.createElement("tr")
 			
-			p.append("q" + i)
-			for (let i = 0; i < numInputs; i++) {
+			p.append(String.fromCharCode("A".charCodeAt(0) + i))
+			for (let j = 0; j < numInputs; j++) {
 				let e1 = document.createElement("td")
 				let inp1 = document.createElement("input")
 				inp1.style.textAlign = 'center'
@@ -36,7 +38,7 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 				e1.classList.add("border")
 				inp1.classList.add("w-full")
 				e1.append(inp1)
-				inp1.setAttribute("id", "inputMoore-" + i)
+				inp1.setAttribute("id", "inputMoore-" + i+j)
 			}
 			let e1 = document.createElement("td")
 			let inp1 = document.createElement("input")
@@ -45,34 +47,45 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 			e1.classList.add("border")
 			inp1.classList.add("w-full")
 			e1.append(inp1)
-			inp1.setAttribute("id", "outputMoore")
+			inp1.setAttribute("id", "outputMoore-"+i)
 			inputs.append(p)
 		}
 	})
 
-	let sendDataMealy = () => {
+	let sendDataMoore = () => {
 		let obj = {}
 		obj["numStates"] = numStates
-		obj["numInputs"] = numInputs
-		obj["StateTable"] = {}
+		obj["inputAlphabet"] = inputAlphabet
+		obj["MooreStateTable"] = {}
 
 		for (let i = 0; i < numStates; i++) {
 			console.log(String.fromCharCode("A".charCodeAt(0) + i))
 			let state = String.fromCharCode("A".charCodeAt(0) + i)
 
-			obj["StateTable"][state] = {f: [], g: []}
+			obj["MooreStateTable"][state] = {f: [], h: []}
 
 			for (let j = 0; j < numInputs; j++) {
 
-				let inputE = document.getElementById("input-" + i).value
-				let outputE = document.getElementById("output-" + i).value
+				let inputE = document.getElementById("inputMoore-" + i+j).value
 
-				obj["StateTable"][state]["f"].push(inputE)
-				obj["StateTable"][state]["g"].push(outputE)
+				obj["MooreStateTable"][state]["f"].push(inputE)
 			}
+			let outputE = document.getElementById("outputMoore-"+i).value
+			obj["MooreStateTable"][state]["h"].push(outputE)
+
 		}
 
 		console.log(obj)
+
+		fetch('/api/fetchMoore', {
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(obj),
+			  })
+	
+			router.push("/resultMoore")
 	}
 
 	return (
@@ -87,7 +100,7 @@ export default function MooreInputTable({inputAlphabet, numStates}) {
 						</tbody>
 					</table>
 				</div>
-				<button onClick={sendDataMealy}>Minimum distinguishable</button>
+				<button onClick={sendDataMoore}>Reduce table</button>
 			</div>
 		</div>
 	)
