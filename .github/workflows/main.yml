@@ -16,6 +16,7 @@ jobs:
 
       - name: NPM audit
         id: npm-audit
+        continue-on-error: true
         run: |
           npm audit
           NPM_OUTPUT=$(npm audit)
@@ -23,7 +24,7 @@ jobs:
           echo "output=$NPM_OUTPUT" >> "$GITHUB_OUTPUT"
         
       - name: Login
-        # if: steps.npm-audit.outputs.exit_code != 0
+        if: steps.npm-audit.outputs.exit_code != 0
         uses: atlassian/gajira-login@v3
         env:
           JIRA_BASE_URL: https://illuminapps.atlassian.net
@@ -31,7 +32,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JiraApiToken }}
 
       - name: Create\
-        # if: steps.npm-audit.outputs.exit_code != 0
+        if: steps.npm-audit.outputs.exit_code != 0
         id: create
         uses: atlassian/gajira-create@v3
         with:
