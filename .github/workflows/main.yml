@@ -11,9 +11,9 @@ jobs:
 
       - name: NPM audit
         id: npm-audit
-        continue-on-error: true
         run: |
           NPM_OUTPUT=$(npm audit)
+          echo output:$NPM_OUTPUT
           echo "output=$NPM_OUTPUT" >> "$GITHUB_OUTPUT"
         
       - name: Login
