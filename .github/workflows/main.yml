@@ -1,0 +1,47 @@
+name: GitHub Security Alerts for Jira
+
+on: workflow_dispatch
+
+jobs:
+  syncSecurityAlerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: NPM audit
+        id: npm-audit
+        continue-on-error: true
+        run: |
+          NPM_OUTPUT=$(npm audit) || echo "NPM_OUTPUT<<EOF" >> $GITHUB_ENV && echo "$NPM_OUTPUT" >> $GITHUB_ENV && echo "EOF" >> $GITHUB_ENV && exit 1
+          echo "No vulnerabilities on npm packages"
+        
+      - name: Login
+        if: steps.npm-audit.outcome != 'success'
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: https://illuminapps.atlassian.net
+          JIRA_USER_EMAIL: dialhepachon@gmail.com
+          JIRA_API_TOKEN: ${{ secrets.JiraApiToken }}
+
+      - name: Testing output
+        run: echo "${{env.NPM_OUTPUT}}"
+
+      - name: Create
+        if: steps.npm-audit.outcome != 'success'
+        id: create
+        uses: atlassian/gajira-create@v3
+        with:
+          project: EEL
+          issuetype: Bug
+          summary: NPM Audit for ${{ github.repository }}
+          description: ${{env.NPM_OUTPUT}}
+      
+      - name: Log created issue
+        if: steps.npm-audit.outcome != 'success'
+        run: echo "Issue ${{ steps.create.outputs.issue }} was created"
