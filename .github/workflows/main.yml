@@ -9,7 +9,7 @@ jobs:
       - name: NPM audit
         id: npm-audit
         continue-on-error: true
-        run: echo "output=${npm audit}" >> "$GITHUB_OUTPUT"
+        run: echo "output=$(npm audit)" >> "$GITHUB_OUTPUT"
         
       - name: Login
         if: steps.npm-audit.outputs.exit_code != 0
