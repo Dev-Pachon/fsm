@@ -1,7 +1,6 @@
 name: GitHub Security Alerts for Jira
 
-on:
-  schedule: workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   syncSecurityAlerts:
