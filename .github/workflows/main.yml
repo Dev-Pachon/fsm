@@ -1,0 +1,19 @@
+name: GitHub Security Alerts for Jira
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  syncSecurityAlerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Sync security alerts to Jira issues"
+        uses: reload/github-security-jira@v1.x
+        env:
+          GH_SECURITY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JIRA_TOKEN: ${{ secrets.JiraApiToken }}
+          JIRA_HOST: https://illuminapps.atlassian.net
+          JIRA_USER: dialhepachon@gmail.com
+          JIRA_PROJECT: EEL
+          JIRA_ISSUE_TYPE: Bug
