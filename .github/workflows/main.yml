@@ -18,7 +18,7 @@ jobs:
         id: npm-audit
         continue-on-error: true
         run: |
-          NPM_OUTPUT=$(npm audit) || (echo "output:$NPM_OUTPUT" && (echo -e "output='$NPM_OUTPUT'" >> "$GITHUB_OUTPUT"))
+          NPM_OUTPUT=$(npm audit) || echo "NPM_OUTPUT<<EOF" >> $GITHUB_ENV && echo "$NPM_OUTPUT" >> $GITHUB_ENV && echo "EOF" >> $GITHUB_ENV
         
       - name: Login
         if: steps.npm-audit.outcome != 'success'
@@ -29,7 +29,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JiraApiToken }}
 
       - name: Testing output
-        run: echo "${{steps.npm-audit.outputs.output}}"
+        run: echo "${{env.NPM_OUTPUT}}"
 
       - name: Create
         if: steps.npm-audit.outcome != 'success'
@@ -39,7 +39,7 @@ jobs:
           project: EEL
           issuetype: Bug
           summary: NPM Audit for ${{ github.repository }}
-          description: ${{steps.npm-audit.outputs.output}}
+          description: ${{env.NPM_OUTPUT}}
       
       - name: Log created issue
         if: steps.npm-audit.outcome != 'success'
