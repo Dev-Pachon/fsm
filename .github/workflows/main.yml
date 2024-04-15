@@ -16,4 +16,3 @@ jobs:
           JIRA_HOST: https://illuminapps.atlassian.net
           JIRA_USER: dialhepachon@gmail.com
           JIRA_PROJECT: EEL
-          JIRA_ISSUE_TYPE: Bug
