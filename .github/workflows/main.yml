@@ -1,8 +1,7 @@
 name: GitHub Security Alerts for Jira
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
+  schedule: workflow_dispatch
 
 jobs:
   syncSecurityAlerts:
