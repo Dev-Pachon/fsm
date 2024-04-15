@@ -13,7 +13,7 @@ jobs:
         id: npm-audit
         run: |
           NPM_OUTPUT=$(npm audit)
-          echo output:$NPM_OUTPUT
+          echo "output:$NPM_OUTPUT"
           echo "output=$NPM_OUTPUT" >> "$GITHUB_OUTPUT"
         
       - name: Login
