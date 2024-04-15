@@ -18,7 +18,7 @@ jobs:
         id: npm-audit
         continue-on-error: true
         run: |
-          NPM_OUTPUT=$(npm audit) || echo "NPM_OUTPUT<<EOF" >> $GITHUB_ENV && echo "$NPM_OUTPUT" >> $GITHUB_ENV && echo "EOF" >> $GITHUB_ENV
+          NPM_OUTPUT=$(npm audit) || echo "NPM_OUTPUT<<EOF" >> $GITHUB_ENV && echo "$NPM_OUTPUT" >> $GITHUB_ENV && echo "EOF" >> $GITHUB_ENV && exit 1
           echo "No vulnerabilities on npm packages"
         
       - name: Login
